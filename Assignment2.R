@@ -12,6 +12,9 @@ bikes_tbl <- read_excel(path = "Business Data Science/00_data/01_bike_sales/01_r
 orderlines_tbl <- read_excel(path = "Business Data Science/00_data/01_bike_sales/01_raw_data/orderlines.xlsx")
 bikeshops_tbl <- read_excel(path = "Business Data Science/00_data/01_bike_sales/01_raw_data/bikeshops.xlsx")
 
+bikes_tbl
+orderlines_tbl
+
 #Data Wrangling
 bike_orderlines_joined_tbl <- orderlines_tbl %>%
   left_join(bikes_tbl, by = c("product.id" = "bike.id")) %>%
@@ -21,6 +24,7 @@ bike_orderlines_joined_tbl %>%
   select(category)%>%
   filter(str_detect(category, "^Gravel")) %>%
   unique()
+bike_orderlines_joined_tbl$category
 
 bike_orderlines_wrangled_tbl <- bike_orderlines_joined_tbl %>%
   separate(col = category,
@@ -36,6 +40,8 @@ bike_orderlines_wrangled_tbl <- bike_orderlines_joined_tbl %>%
   rename(bikeshop = name) %>%
   set_names(names(.) %>% str_replace_all("\\.", "_"))
 
+bike_orderlines_wrangled_tbl$location
+
 bike_orderlines_wrangled_2_tbl <- bike_orderlines_wrangled_tbl %>%
   separate(col = location,
            into = c("city", "state"),
@@ -43,6 +49,7 @@ bike_orderlines_wrangled_2_tbl <- bike_orderlines_wrangled_tbl %>%
   select(order_id, contains("order"), contains("model"), contains("category"),
          price, quantity, total_price,
          everything())
+glimpse(bike_orderlines_wrangled_2_tbl)
 
 #Solution 1
 sales_by_state_tbl <- bike_orderlines_wrangled_2_tbl %>%
@@ -73,6 +80,7 @@ sales_by_state_tbl <- bike_orderlines_wrangled_2_tbl %>%
 
 #Solution 2
 glimpse(bike_orderlines_wrangled_tbl)
+
 sales_by_state_year_tbl <- bike_orderlines_wrangled_2_tbl %>%
   select(order_date, total_price, state) %>%
   mutate(year = year(order_date)) %>%
@@ -99,10 +107,10 @@ sales_by_state_year_tbl <- bike_orderlines_wrangled_2_tbl %>%
   )
 
 #Optional
-bike_orderlines_wrangled_tbl %>%
+bike_orderlines_wrangled_2_tbl %>%
   write_xlsx("Business Data Science/00_data/01_bike_sales/02_wrangled_data/bike_orderlines.xlsx")
-bike_orderlines_wrangled_tbl %>%
+bike_orderlines_wrangled_2_tbl %>%
   write_xlsx("Business Data Science/00_data/01_bike_sales/02_wrangled_data/bike_orderlines.csv")
-bike_orderlines_wrangled_tbl %>%
+bike_orderlines_wrangled_2_tbl %>%
   write_xlsx("Business Data Science/00_data/01_bike_sales/02_wrangled_data/bike_orderlines.rds")
 
